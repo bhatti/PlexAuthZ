@@ -1,0 +1,200 @@
+syntax = "proto3";
+
+package api.authz.services;
+
+option go_package = "github.com/bhatti/PlexAuthZ/api/authz/services";
+
+import "google/protobuf/timestamp.proto";
+
+// CreateRelationshipRequest is request model for creating relationship.
+//
+// swagger:parameters createRelationshipRequest
+message CreateRelationshipRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+
+  // Relation name.
+  // in:body
+  string relation = 3;
+
+  // PrincipalID for relationship.
+  // in:body
+  string principal_id = 4;
+
+  // ResourceID for relationship.
+  // in:body
+  string resource_id = 5;
+
+  // Attributes of relationship.
+  // in:body
+  map<string, string> attributes = 6;
+
+}
+
+// CreateRelationshipResponse is response model for creating relationship.
+//
+// swagger:parameters createRelationshipResponse
+message CreateRelationshipResponse {
+  // ID unique identifier assigned to this relationship.
+  // in: body
+  string id = 1;
+}
+
+// UpdateRelationshipRequest is request model for updating relationship.
+//
+// swagger:parameters updateRelationshipRequest
+message UpdateRelationshipRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+  // in: path
+  string id = 3;
+
+  // Version
+  // in: body
+  int64 version = 4;
+
+  // Relation name.
+  string relation = 5;
+
+  // PrincipalID for relationship.
+  string principal_id = 6;
+
+  // ResourceID for relationship.
+  string resource_id = 7;
+
+  // Attributes of relationship.
+  // in:body
+  map<string, string> attributes = 8;
+
+}
+
+// UpdateRelationshipResponse is response model for updating relationship.
+//
+// swagger:parameters updateRelationshipResponse
+message UpdateRelationshipResponse {
+}
+
+// DeleteRelationshipRequest is request model for deleting relationship.
+//
+// swagger:parameters deleteRelationshipRequest
+message DeleteRelationshipRequest {
+  // in: path
+  string organization_id = 1;
+
+  // in: path
+  string namespace = 2;
+
+  // in: path
+  string id = 3;
+}
+
+// DeleteRelationshipResponse is response model for deleting relationship by id.
+//
+// swagger:parameters deleteRelationshipResponse
+message DeleteRelationshipResponse {
+}
+
+// QueryRelationshipRequest is request model for querying relationships.
+//
+// swagger:parameters queryRelationshipRequest
+message QueryRelationshipRequest {
+  // in: path
+  string organization_id = 1;
+
+  // in: path
+  string namespace = 2;
+
+  // Name of the relationship.
+  // in:query
+  map<string, string> predicates = 3;
+
+  // in: query
+  string offset = 4;
+
+  // in: query
+  int64 limit = 5;
+}
+
+// QueryRelationshipResponse is response model for querying relationship.
+//
+// swagger:parameters queryRelationshipResponse
+message QueryRelationshipResponse {
+  // ID unique identifier assigned to this relationship.
+  // in: body
+  string id = 1;
+
+  // Version
+  // in: body
+  int64 version = 2;
+
+  // Namespace of Relationship.
+  // in: Body
+  string namespace = 3;
+
+  // Relation name.
+  string relation = 4;
+
+  // PrincipalID for relationship.
+  string principal_id = 5;
+
+  // ResourceID for relationship.
+  string resource_id = 6;
+
+  // in: body
+  string next_offset = 7;
+
+  // Attributes of relationship.
+  // in:body
+  map<string, string> attributes = 8;
+
+  // Created date
+  // in: body
+  google.protobuf.Timestamp created = 9;
+
+  // Updated date
+  // in: body
+  google.protobuf.Timestamp updated = 10;
+}
+
+// RelationshipsService for authorization request
+service RelationshipsService {
+  // Create Relationships swagger:route POST /api/v1/{organization_id}/{namespace}/relations relationships createRelationshipRequest
+  //
+  // Responses:
+  // 200: createRelationshipResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Create (CreateRelationshipRequest) returns (CreateRelationshipResponse);
+
+  // Update Relationships swagger:route PUT /api/v1/{organization_id}/{namespace}/relations/{id} relationships updateRelationshipRequest
+  //
+  // Responses:
+  // 200: updateRelationshipResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Update (UpdateRelationshipRequest) returns (UpdateRelationshipResponse);
+
+  // Query Relationship swagger:route GET /api/v1/{organization_id}/{namespace}/relations relationships queryRelationshipRequest
+  //
+  // Responses:
+  // 200: queryRelationshipResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Query (QueryRelationshipRequest) returns (stream QueryRelationshipResponse);
+
+  // Delete Relationship swagger:route DELETE /api/v1/{organization_id}/{namespace}/relations/{id} relationships deleteRelationshipRequest
+  //
+  // Responses:
+  // 200: deleteRelationshipResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Delete (DeleteRelationshipRequest) returns (DeleteRelationshipResponse);
+}

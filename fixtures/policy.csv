@@ -1,0 +1,7 @@
+p, root, *, create
+p, root, *, update
+p, root, *, query
+p, root, *, delete
+p, root, *, auth
+p, client, *, query
+p, client, *, auth

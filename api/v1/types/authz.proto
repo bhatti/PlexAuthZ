@@ -1,0 +1,357 @@
+syntax = "proto3";
+
+package api.authz.types;
+
+option go_package = "github.com/bhatti/PlexAuthZ/api/v1/types";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+// Organization that owns roles, groups, relations, and principals for a given namespace.
+// swagger:model
+message Organization {
+  // ID unique identifier assigned to this organization.
+  // in:body
+  string id = 1;
+
+  // Version
+  // in:body
+  int64 version = 2;
+
+  // Name of organization.
+  // in:body
+  string name = 3;
+
+  // Allowed Namespaces for organization.
+  // in:body
+  repeated string namespaces = 4;
+
+  // url for organization.
+  // in:body
+  string url = 5;
+
+  // Optional parent ids.
+  // in:body
+  repeated string parent_ids = 6;
+
+  // Created date
+  // in:body
+  google.protobuf.Timestamp created = 7;
+
+  // Updated date
+  // in:body
+  google.protobuf.Timestamp updated = 8;
+}
+
+// Resource - The object that the principal wants to access (e.g., a file, a database record).
+// swagger:model
+message Resource {
+  // ID unique identifier assigned to this resource.
+  // in:body
+  string id = 1;
+
+  // Version
+  // in:body
+  int64 version = 2;
+
+  // Namespace for resource.
+  // in:body
+  string namespace = 3;
+
+  // Name of the resource.
+  // in:body
+  string name = 4;
+
+  // capacity of resource.
+  // in:body
+  int32 capacity = 5;
+
+  // Attributes of resource.
+  // in:body
+  map<string, string> attributes = 6;
+
+  // AllowedActions that can be performed.
+  // in:body
+  repeated string allowed_actions = 7;
+
+  // Wildcard if resource name contains *
+  // in:body
+  bool wildcard = 8;
+
+  // Created date
+  // in:body
+  google.protobuf.Timestamp created = 9;
+
+  // Updated date
+  // in:body
+  google.protobuf.Timestamp updated = 10;
+}
+
+enum ResourceState {
+  ALLOCATED = 0;
+  AVAILABLE = 1;
+}
+
+// ResourceInstance - instance of the resource for tracking quota of resource.
+// swagger:model
+message ResourceInstance {
+  // ID unique identifier assigned to this resource instance.
+  // in:body
+  string id = 1;
+
+  // Version
+  // in:body
+  int64 version = 2;
+
+  // ResourceID of the resource.
+  // in:body
+  string resource_id = 3;
+
+  // Namespace for resource.
+  // in:body
+  string namespace = 4;
+
+  // Principal that is using the resource.
+  // in:body
+  string principal_id = 5;
+
+  // state of resource instance.
+  // in:body
+  ResourceState state = 6;
+
+  // Time duration in milliseconds after which instance will expire.
+  // in:body
+  google.protobuf.Duration expiry = 7;
+
+  // Created date
+  // in:body
+  google.protobuf.Timestamp created = 8;
+
+  // Updated date
+  // in:body
+  google.protobuf.Timestamp updated = 9;
+}
+
+enum Effect {
+  PERMITTED = 0;
+  DENIED = 1;
+}
+
+// Permission - An action that a principal is allowed to perform on a particular resource.
+// For example, reading a file, updating a database record, or deleting an account.
+// swagger:model
+message Permission {
+  // ID unique identifier assigned to this permission.
+  // in:body
+  string id = 1;
+
+  // Version
+  // in:body
+  int64 version = 2;
+
+  // Namespace for permission.
+  // in:body
+  string namespace = 3;
+
+  // Scope for permission.
+  // in:body
+  string scope = 4;
+
+  // Actions that can be performed.
+  // in:body
+  repeated string actions = 5;
+
+  // Resource for the action.
+  // in:body
+  string resource_id = 6;
+
+  // Effect Permitted or Denied
+  // in:body
+  Effect effect = 7;
+
+  // Constraints expression with dynamic properties.
+  // in:body
+  string constraints = 8;
+
+  // Created date
+  // in:body
+  google.protobuf.Timestamp created = 9;
+
+  // Updated date
+  // in:body
+  google.protobuf.Timestamp updated = 10;
+}
+
+// Role - A named collection of permissions that can be assigned to a principal.
+// Roles simplify the management of permissions by grouping them together under a single label.
+// swagger:model
+message Role {
+  // ID unique identifier assigned to this role.
+  // in:body
+  string id = 1;
+
+  // Version
+  // in:body
+  int64 version = 2;
+
+  // Namespace for permission.
+  // in:body
+  string namespace = 3;
+
+  // Name of the role.
+  // in:body
+  string name = 4;
+
+  // PermissionIDs that can be performed.
+  // in:body
+  repeated string permission_ids = 5;
+
+  // Optional parent ids
+  // in:body
+  repeated string parent_ids = 6;
+
+  // Created date
+  // in:body
+  google.protobuf.Timestamp created = 7;
+
+  // Updated date
+  // in:body
+  google.protobuf.Timestamp updated = 8;
+}
+
+// Group - A collection of principals that are treated as a single unit for the purpose of granting permissions.
+// For example, an "Admins" group might be given a role that allows them to perform administrative actions.
+// swagger:model
+message Group {
+  // ID unique identifier assigned to this group.
+  // in:body
+  string id = 1;
+
+  // Version
+  // in:body
+  int64 version = 2;
+
+  // Namespace for permission.
+  // in:body
+  string namespace = 3;
+
+  // Name of the group.
+  // in:body
+  string name = 4;
+
+  // RoleIDs that are associated.
+  // in:body
+  repeated string role_ids = 5;
+
+  // Optional parent ids.
+  // in:body
+  repeated string parent_ids = 6;
+
+  // Created date
+  // in:body
+  google.protobuf.Timestamp created = 7;
+
+  // Updated date
+  // in:body
+  google.protobuf.Timestamp updated = 8;
+}
+
+// Relationship - represents a relationship between a resource and a principal.
+// swagger:model
+message Relationship {
+  // ID unique identifier assigned to this relationship.
+  // in:body
+  string id = 1;
+
+  // Version
+  // in:body
+  int64 version = 2;
+
+  // Namespace for permission.
+  // in:body
+  string namespace = 3;
+
+  // Relation name.
+  // in:body
+  string relation = 4;
+
+  // PrincipalID for relationship.
+  // in:body
+  string principal_id = 5;
+
+  // ResourceID for relationship.
+  // in:body
+  string resource_id = 6;
+
+  // Attributes of relationship.
+  // in:body
+  map<string, string> attributes = 7;
+
+  // Created date
+  // in:body
+  google.protobuf.Timestamp created = 8;
+
+  // Updated date
+  // in:body
+  google.protobuf.Timestamp updated = 9;
+}
+
+// Principal - The entity (which could be a user, system, or another service) that is making the request.
+// Principals are often authenticated before they are authorized to perform an action.
+// swagger:model
+message Principal {
+  // ID unique identifier assigned to this principal.
+  // in:body
+  string id = 1;
+
+  // Version
+  // in:body
+  int64 version = 2;
+
+  // OrganizationId of the principal user.
+  // in:body
+  string organization_id = 3;
+
+  // Allowed Namespaces for principal, should be subset of namespaces in organization.
+  // in:body
+  repeated string namespaces = 4;
+
+  // Username of the principal user.
+  // in:body
+  string username = 5;
+
+  // Email of the principal user.
+  // in:body
+  string email = 6;
+
+  // Name of the principal user.
+  // in:body
+  string name = 7;
+
+  // Attributes of principal
+  // in:body
+  map<string, string> attributes = 8;
+
+  // Groups that the principal belongs to.
+  // in:body
+  repeated string group_ids = 9;
+
+  // Roles that the principal belongs to.
+  // in:body
+  repeated string role_ids = 10;
+
+  // Permissions that the principal belongs to.
+  // in:body
+  repeated string permission_ids = 11;
+
+  // Relationships that the principal belongs to.
+  // in:body
+  repeated string relation_ids = 12;
+
+  // Created date
+  // in:body
+  google.protobuf.Timestamp created = 13;
+
+  // Updated date
+  // in:body
+  google.protobuf.Timestamp updated = 14;
+}

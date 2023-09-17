@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package api.authz.services;
+
+option go_package = "github.com/bhatti/PlexAuthZ/api/authz/services";
+import "api/v1/types/authz.proto";
+import "google/protobuf/duration.proto";
+
+// AuthRequest is request model for authorization access API.
+//
+// swagger:parameters authRequest
+message AuthRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+  // in: path
+  string principal_id = 3;
+  // in: body
+  string action = 4;
+  // in: body
+  string resource = 5;
+  // in: body
+  string scope = 6;
+  // in: body
+  map<string, string> context = 7;
+}
+
+// AuthResponse is response model for authorization access API.
+//
+// swagger:parameters authResponse
+message AuthResponse {
+  // in: body
+  api.authz.types.Effect effect = 1;
+  // in: body
+  string message = 2;
+}
+
+// CheckConstraintsRequest is request model for checking constraints and authorization access API.
+//
+// swagger:parameters checkConstraintsRequest
+message CheckConstraintsRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+  // in: path
+  string principal_id = 3;
+  // in: body
+  string constraints = 4;
+  // in: body
+  map<string, string> context = 5;
+}
+
+// CheckConstraintsResponse is response model for checking constraints and authorization access API.
+//
+// swagger:parameters checkConstraintsResponse
+message CheckConstraintsResponse {
+  // in: body
+  bool matched = 1;
+  // in: body
+  string output = 2;
+}
+
+// AllocateResourceRequest is request model for allocating resource.
+//
+// swagger:parameters allocateResourceRequest
+message AllocateResourceRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+  // Resource Id.
+  // in: path
+  string resource_id = 3;
+  // Principal Id.
+  // in: path
+  string principal_id = 4;
+  // Constraints of allocation.
+  // in: body
+  string constraints = 5;
+
+  // Time duration in milliseconds after which instance will expire.
+  // in: body
+  google.protobuf.Duration expiry = 6;
+
+  // Context parameters.
+  // in: body
+  map<string, string> context = 7;
+}
+
+// AllocateResourceResponse is response model for allocating resource.
+//
+// swagger:parameters allocateResourceResponse
+message AllocateResourceResponse {
+}
+
+// DeallocateResourceRequest is request model for deallocating resource.
+//
+// swagger:parameters deallocateResourceRequest
+message DeallocateResourceRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+  // Resource Id
+  // in: path
+  string resource_id = 3;
+  // Principal Id
+  // in: path
+  string principal_id = 4;
+}
+
+// DeallocateResourceResponse is response model for deallocating resource.
+//
+// swagger:parameters deallocateResourceResponse
+message DeallocateResourceResponse {
+}
+
+// AuthZService for authorization request and allocating resources.
+service AuthZService {
+  // Authorize swagger:route POST /api/v1/{organization_id}/{namespace}/{principal_id}/auth authz authRequest
+  //
+  // Responses:
+  // 200: authResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Authorize (AuthRequest) returns (AuthResponse);
+
+  // Check swagger:route POST /api/v1/{organization_id}/{namespace}/{principal_id}/auth/constraints authz checkConstraintsRequest
+  //
+  // Responses:
+  // 200: checkConstraintsResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Check (CheckConstraintsRequest) returns (CheckConstraintsResponse);
+
+  // Allocate Resources swagger:route PUT /api/v1/{organization_id}/{namespace}/resources/{id}/allocate/{principal_id} resources allocateResourceRequest
+  //
+  // Responses:
+  // 200: allocateResourceResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Allocate (AllocateResourceRequest) returns (AllocateResourceResponse);
+
+  // Deallocate Resources swagger:route PUT /api/v1/{organization_id}/{namespace}/resources/{id}/deallocate/{principal_id} resources deallocateResourceRequest
+  //
+  // Responses:
+  // 200: deallocateResourceResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Deallocate (DeallocateResourceRequest) returns (DeallocateResourceResponse);
+
+}

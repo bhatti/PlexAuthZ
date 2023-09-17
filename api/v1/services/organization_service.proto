@@ -1,0 +1,230 @@
+syntax = "proto3";
+
+package api.authz.services;
+
+option go_package = "github.com/bhatti/PlexAuthZ/api/authz/services";
+
+import "google/protobuf/timestamp.proto";
+
+// CreateOrganizationRequest is request model for creating organization.
+//
+// swagger:parameters createOrganizationRequest
+message CreateOrganizationRequest {
+  // Name of the organization.
+  // in: body
+  string name = 1;
+
+  // Allowed Namespaces for organization.
+  repeated string namespaces = 2;
+
+  // url for organization.
+  // in: body
+  string url = 3;
+
+  // Optional parent ids.
+  // in: body
+  repeated string parent_ids = 4; // optional
+}
+
+// CreateOrganizationResponse is response model for creating organization.
+//
+// swagger:parameters createOrganizationResponse
+message CreateOrganizationResponse {
+  // ID unique identifier assigned to this organization.
+  // in: body
+  string id = 1;
+}
+
+// UpdateOrganizationRequest is request model for updating organization.
+//
+// swagger:parameters updateOrganizationRequest
+message UpdateOrganizationRequest {
+  // in: path
+  string id = 1;
+
+  // Version
+  // in: body
+  int64 version = 2;
+
+  // Name of the organization.
+  // in: body
+  string name = 3;
+
+  // Allowed Namespaces for organization.
+  repeated string namespaces = 4;
+
+  // url for organization.
+  // in: body
+  string url = 5;
+
+  // Optional parent ids.
+  // in: body
+  repeated string parent_ids = 6; // optional
+}
+
+// UpdateOrganizationResponse is response model for updating organization.
+//
+// swagger:parameters updateOrganizationResponse
+message UpdateOrganizationResponse {
+}
+
+// GetOrganizationRequest is request model for fetching organization.
+//
+// swagger:parameters getOrganizationRequest
+message GetOrganizationRequest {
+  // in: path
+  string id = 1;
+}
+
+// GetOrganizationResponse is response model for retrieving organization by id.
+//
+// swagger:parameters getOrganizationResponse
+message GetOrganizationResponse {
+  // ID unique identifier assigned to this organization.
+  // in: body
+  string id = 1;
+
+  // Version
+  // in: body
+  int64 version = 2;
+
+  // Name of the organization.
+  // in: body
+  string name = 3;
+
+  // Allowed Namespaces for organization.
+  // in: body
+  repeated string namespaces = 4;
+
+  // url for organization.
+  // in: body
+  string url = 5;
+
+  // Optional parent ids.
+  // in: body
+  repeated string parent_ids = 6; // optional
+
+  // Created date
+  // in: body
+  google.protobuf.Timestamp created = 7;
+
+  // Updated date
+  // in: body
+  google.protobuf.Timestamp updated = 8;
+}
+
+// DeleteOrganizationRequest is request model for deleting organization.
+//
+// swagger:parameters deleteOrganizationRequest
+message DeleteOrganizationRequest {
+  // in: path
+  string id = 1;
+}
+
+// DeleteOrganizationResponse is response model for deleting organization by id.
+//
+// swagger:parameters deleteOrganizationResponse
+message DeleteOrganizationResponse {
+}
+
+// QueryOrganizationRequest is request model for querying organizations.
+//
+// swagger:parameters queryOrganizationRequest
+message QueryOrganizationRequest {
+  // Name of the organization.
+  // in:query
+  map<string, string> predicates = 1;
+
+  // in: query
+  string offset = 2;
+
+  // in: query
+  int64 limit = 3;
+}
+
+// QueryOrganizationResponse is response model for querying organization.
+//
+// swagger:parameters queryOrganizationResponse
+message QueryOrganizationResponse {
+  // ID unique identifier assigned to this organization.
+  // in: body
+  string id = 1;
+
+  // Version
+  // in: body
+  int64 version = 2;
+
+  // Name of the organization.
+  // in: body
+  string name = 3;
+
+  // Allowed Namespaces for organization.
+  // in: body
+  repeated string namespaces = 4;
+
+  // url for organization.
+  // in: body
+  string url = 5;
+
+  // Optional parent ids.
+  // in: body
+  repeated string parent_ids = 6; // optional
+
+  // in: body
+  string next_offset = 7;
+
+  // Created date
+  google.protobuf.Timestamp created = 8;
+
+  // Updated date
+  google.protobuf.Timestamp updated = 9;
+}
+
+// OrganizationsService for authorization request
+service OrganizationsService {
+  // Create Organizations swagger:route POST /api/v1/organizations organizations createOrganizationRequest
+  //
+  // Responses:
+  // 200: createOrganizationResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Create (CreateOrganizationRequest) returns (CreateOrganizationResponse);
+
+  // Update Organizations swagger:route PUT /api/v1/organizations/{id} organizations updateOrganizationRequest
+  //
+  // Responses:
+  // 200: updateOrganizationResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Update (UpdateOrganizationRequest) returns (UpdateOrganizationResponse);
+
+  // Get Organization swagger:route GET /api/v1/organizations/{id} organizations getOrganizationRequest
+  //
+  // Responses:
+  // 200: getOrganizationResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Get (GetOrganizationRequest) returns (GetOrganizationResponse);
+
+
+  // Query Organization swagger:route GET /api/v1/organizations organizations queryOrganizationRequest
+  //
+  // Responses:
+  // 200: queryOrganizationResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Query (QueryOrganizationRequest) returns (stream QueryOrganizationResponse);
+
+  // Delete Organization swagger:route DELETE /api/v1/organizations/{id} organizations deleteOrganizationRequest
+  //
+  // Responses:
+  // 200: deleteOrganizationResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Delete (DeleteOrganizationRequest) returns (DeleteOrganizationResponse);
+}

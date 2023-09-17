@@ -1,0 +1,217 @@
+syntax = "proto3";
+
+package api.authz.services;
+
+option go_package = "github.com/bhatti/PlexAuthZ/api/authz/services";
+
+import "api/v1/types/authz.proto";
+import "google/protobuf/timestamp.proto";
+
+// CreatePermissionRequest is request model for creating permission.
+//
+// swagger:parameters createPermissionRequest
+message CreatePermissionRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+
+  // Scope for permission.
+  // in: body
+  string scope = 3;
+
+  // Actions that can be performed.
+  // in: body
+  repeated string actions = 4;
+
+  // Resource for the action.
+  // in: body
+  string resource_id = 5;
+
+  // Effect Permitted or Denied
+  // in: body
+  api.authz.types.Effect effect = 6;
+
+  // Constraints expression with dynamic properties.
+  // in: body
+  string constraints = 7;
+}
+
+// CreatePermissionResponse is response model for creating permission.
+//
+// swagger:parameters createPermissionResponse
+message CreatePermissionResponse {
+  // ID unique identifier assigned to this permission.
+  // in: body
+  string id = 1;
+}
+
+// UpdatePermissionRequest is request model for updating permission.
+//
+// swagger:parameters updatePermissionRequest
+message UpdatePermissionRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+  // in: path
+  string id = 3;
+
+  // Version
+  // in: body
+  int64 version = 4;
+
+  // Scope for permission.
+  // in: body
+  string scope = 5;
+
+  // Actions that can be performed.
+  // in: body
+  repeated string actions = 6;
+
+  // Resource for the action.
+  // in: body
+  string resource_id = 7;
+
+  // Effect Permitted or Denied
+  // in: body
+  api.authz.types.Effect effect = 8;
+
+  // Constraints expression with dynamic properties.
+  // in: body
+  string constraints = 9;
+}
+
+// UpdatePermissionResponse is response model for updating permission.
+//
+// swagger:parameters updatePermissionResponse
+message UpdatePermissionResponse {
+}
+
+// DeletePermissionRequest is request model for deleting permission.
+//
+// swagger:parameters deletePermissionRequest
+message DeletePermissionRequest {
+  // in: path
+  string organization_id = 1;
+
+  // in: path
+  string namespace = 2;
+
+  // in: path
+  string id = 3;
+}
+
+// DeletePermissionResponse is response model for deleting permission by id.
+//
+// swagger:parameters deletePermissionResponse
+message DeletePermissionResponse {
+}
+
+// QueryPermissionRequest is request model for querying permissions.
+//
+// swagger:parameters queryPermissionRequest
+message QueryPermissionRequest {
+  // in: path
+  string organization_id = 1;
+
+  // in: path
+  string namespace = 2;
+
+  // Name of the permission.
+  // in:query
+  map<string, string> predicates = 3;
+
+  // in: query
+  string offset = 4;
+
+  // in: query
+  int64 limit = 5;
+}
+
+// QueryPermissionResponse is response model for querying permission.
+//
+// swagger:parameters queryPermissionResponse
+message QueryPermissionResponse {
+  // ID unique identifier assigned to this permission.
+  // in: body
+  string id = 1;
+
+  // Version
+  // in: body
+  int64 version = 2;
+
+  // Namespace of Permission.
+  // in: Body
+  string namespace = 3;
+
+  // Scope for permission.
+  // in: body
+  string scope = 4;
+
+  // Actions that can be performed.
+  // in: body
+  repeated string actions = 5;
+
+  // Resource for the action.
+  // in: body
+  string resource_id = 6;
+
+  // Effect Permitted or Denied
+  // in: body
+  api.authz.types.Effect effect = 7;
+
+  // Constraints expression with dynamic properties.
+  // in: body
+  string constraints = 8;
+
+  // in: body
+  string next_offset = 9;
+
+  // Created date
+  // in: body
+  google.protobuf.Timestamp created = 10;
+
+  // Updated date
+  // in: body
+  google.protobuf.Timestamp updated = 11;
+}
+
+// PermissionsService for authorization request
+service PermissionsService {
+  // Create Permissions swagger:route POST /api/v1/{organization_id}/{namespace}/permissions permissions createPermissionRequest
+  //
+  // Responses:
+  // 200: createPermissionResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Create (CreatePermissionRequest) returns (CreatePermissionResponse);
+
+  // Update Permissions swagger:route PUT /api/v1/{organization_id}/{namespace}/permissions/{id} permissions updatePermissionRequest
+  //
+  // Responses:
+  // 200: updatePermissionResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Update (UpdatePermissionRequest) returns (UpdatePermissionResponse);
+
+  // Query Permission swagger:route GET /api/v1/{organization_id}/{namespace}/permissions permissions queryPermissionRequest
+  //
+  // Responses:
+  // 200: queryPermissionResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Query (QueryPermissionRequest) returns (stream QueryPermissionResponse);
+
+  // Delete Permission swagger:route DELETE /api/v1/{organization_id}/{namespace}/permissions/{id} permissions deletePermissionRequest
+  //
+  // Responses:
+  // 200: deletePermissionResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Delete (DeletePermissionRequest) returns (DeletePermissionResponse);
+}

@@ -1,0 +1,16 @@
+{
+    "CN": "plexobjects",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "C": "US",
+            "L": "Seattle",
+            "ST": "WA",
+            "O": "PlexObjects",
+            "OU": "Engineering"
+        }
+    ]
+}

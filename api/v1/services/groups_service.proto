@@ -1,0 +1,250 @@
+syntax = "proto3";
+
+package api.authz.services;
+
+option go_package = "github.com/bhatti/PlexAuthZ/api/authz/services";
+
+import "google/protobuf/timestamp.proto";
+
+// CreateGroupRequest is request model for creating a group.
+//
+// swagger:parameters createGroupRequest
+message CreateGroupRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+
+  // Name (unique) of the group.
+  // in: body
+  string name = 3;
+
+  // Optional parent ids.
+  // in: body
+  repeated string parent_ids = 4; // optional
+}
+
+// CreateGroupResponse is response model for creating group.
+//
+// swagger:parameters createGroupResponse
+message CreateGroupResponse {
+  // ID unique identifier assigned to this group.
+  // in: body
+  string id = 1;
+}
+
+// UpdateGroupRequest is request model for updating group.
+//
+// swagger:parameters updateGroupRequest
+message UpdateGroupRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+  // in: path
+  string id = 3;
+
+  // Version
+  // in: body
+  int64 version = 4;
+
+  // Name (unique) of the group.
+  // in: body
+  string name = 5;
+
+  // Optional parent ids.
+  // in: body
+  repeated string parent_ids = 6; // optional
+}
+
+// UpdateGroupResponse is response model for updating group.
+//
+// swagger:parameters updateGroupResponse
+message UpdateGroupResponse {
+}
+
+// DeleteGroupRequest is request model for deleting group.
+//
+// swagger:parameters deleteGroupRequest
+message DeleteGroupRequest {
+  // in: path
+  string organization_id = 1;
+
+  // in: path
+  string namespace = 2;
+
+  // in: path
+  string id = 3;
+}
+
+// DeleteGroupResponse is response model for deleting group by id.
+//
+// swagger:parameters deleteGroupResponse
+message DeleteGroupResponse {
+}
+
+// QueryGroupRequest is request model for querying groups.
+//
+// swagger:parameters queryGroupRequest
+message QueryGroupRequest {
+  // in: path
+  string organization_id = 1;
+
+  // in: path
+  string namespace = 2;
+
+  // Name of the group.
+  // in:query
+  map<string, string> predicates = 3;
+
+  // in: query
+  string offset = 4;
+
+  // in: query
+  int64 limit = 5;
+}
+
+// QueryGroupResponse is response model for querying group.
+//
+// swagger:parameters queryGroupResponse
+message QueryGroupResponse {
+  // ID unique identifier assigned to this group.
+  // in: body
+  string id = 1;
+
+  // Version
+  // in: body
+  int64 version = 2;
+
+  // Namespace of Group.
+  // in: Body
+  string namespace = 3;
+
+  // Name of the group.
+  // in: body
+  string name = 4;
+
+  // RoleIDs that are associated.
+  // in: body
+  repeated string role_ids = 5;
+
+  // Optional parent ids.
+  // in: body
+  repeated string parent_ids = 6; // optional
+
+  // in: body
+  string next_offset = 7;
+
+  // Created date
+  // in: body
+  google.protobuf.Timestamp created = 8;
+
+  // Updated date
+  // in: body
+  google.protobuf.Timestamp updated = 9;
+}
+
+// AddRolesToGroupRequest is request model for adding role to group.
+//
+// swagger:parameters addRolesToGroupRequest
+message AddRolesToGroupRequest {
+  // in: path
+  string organization_id = 1;
+
+  // in: path
+  string namespace = 2;
+
+  // in: path
+  string group_id = 3;
+
+  // RoleIds to add
+  // in: body
+  repeated string role_ids = 4;
+}
+
+// AddRolesToGroupResponse is response model for adding role to group.
+//
+// swagger:parameters addRolesToGroupResponse
+message AddRolesToGroupResponse {
+}
+
+// DeleteRolesToGroupRequest is request model for deleting role to group.
+//
+// swagger:parameters deleteRolesToGroupRequest
+message DeleteRolesToGroupRequest {
+  // in: path
+  string organization_id = 1;
+
+  // in: path
+  string namespace = 2;
+
+  // in: path
+  string group_id = 3;
+
+  // RoleIds to remove
+  // in: body
+  repeated string role_ids = 4;
+}
+
+// DeleteRolesToGroupResponse is response model for deleting role to group.
+//
+// swagger:parameters deleteRolesToGroupResponse
+message DeleteRolesToGroupResponse {
+}
+
+// GroupsService for authorization request
+service GroupsService {
+  // Create Groups swagger:route POST /api/v1/{organization_id}/{namespace}/groups groups updateGroupRequest
+  //
+  // Responses:
+  // 200: updateGroupResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Create (CreateGroupRequest) returns (CreateGroupResponse);
+
+  // Update Groups swagger:route PUT /api/v1/{organization_id}/{namespace}/groups groups/{id} updateGroupRequest
+  //
+  // Responses:
+  // 200: updateGroupResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Update (UpdateGroupRequest) returns (UpdateGroupResponse);
+
+  // Query Group swagger:route GET /api/v1/{organization_id}/{namespace}/groups groups queryGroupRequest
+  //
+  // Responses:
+  // 200: queryGroupResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Query (QueryGroupRequest) returns (stream QueryGroupResponse);
+
+  // Delete Group swagger:route DELETE /api/v1/{organization_id}/{namespace}/groups/{id} groups deleteGroupRequest
+  //
+  // Responses:
+  // 200: deleteGroupResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Delete (DeleteGroupRequest) returns (DeleteGroupResponse);
+
+  // AddRoles Group swagger:route PUT /api/v1/{organization_id}/{namespace}/groups/{id}/roles/add groups addRolesToGroupRequest
+  //
+  // Responses:
+  // 200: addRolesToGroupResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc AddRoles (AddRolesToGroupRequest) returns (AddRolesToGroupResponse);
+
+  // DeleteRoles Group swagger:route PUT /api/v1/{organization_id}/{namespace}/groups/{id}/roles/delete groups deleteRolesToGroupRequest
+  //
+  // Responses:
+  // 200: deleteRolesToGroupResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc DeleteRoles (DeleteRolesToGroupRequest) returns (DeleteRolesToGroupResponse);
+}

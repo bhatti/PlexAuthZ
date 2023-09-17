@@ -1,0 +1,303 @@
+syntax = "proto3";
+
+package api.authz.services;
+
+option go_package = "github.com/bhatti/PlexAuthZ/api/authz/services";
+
+import "google/protobuf/timestamp.proto";
+import "api/v1/types/authz.proto";
+
+// CreateResourceRequest is request model for creating resource.
+//
+// swagger:parameters createResourceRequest
+message CreateResourceRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+
+  // Name of the resource. (Kind+Name should be unique)
+  string name = 3;
+
+  // capacity of resource.
+  int32 capacity = 4;
+
+  // Attributes of resource.
+  map<string, string> attributes = 5;
+
+  // AllowedActions that can be performed.
+  repeated string allowed_actions = 6;
+}
+
+// CreateResourceResponse is response model for creating resource.
+//
+// swagger:parameters createResourceResponse
+message CreateResourceResponse {
+  // ID unique identifier assigned to this resource.
+  // in: body
+  string id = 1;
+}
+
+// UpdateResourceRequest is request model for updating resource.
+//
+// swagger:parameters updateResourceRequest
+message UpdateResourceRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+  // in: path
+  string id = 3;
+
+  // Version
+  // in: body
+  int64 version = 4;
+
+  // Name of the resource. (Kind+Name should be unique)
+  string name = 5;
+
+  // capacity of resource.
+  int32 capacity = 6;
+
+  // Attributes of resource.
+  map<string, string> attributes = 7;
+
+  // AllowedActions that can be performed.
+  repeated string allowed_actions = 8;
+}
+
+// UpdateResourceResponse is response model for updating resource.
+//
+// swagger:parameters updateResourceResponse
+message UpdateResourceResponse {
+}
+
+// DeleteResourceRequest is request model for deleting resource.
+//
+// swagger:parameters deleteResourceRequest
+message DeleteResourceRequest {
+  // in: path
+  string organization_id = 1;
+
+  // in: path
+  string namespace = 2;
+
+  // in: path
+  string id = 3;
+}
+
+// DeleteResourceResponse is response model for deleting resource by id.
+//
+// swagger:parameters deleteResourceResponse
+message DeleteResourceResponse {
+}
+
+// QueryResourceRequest is request model for querying resources.
+//
+// swagger:parameters queryResourceRequest
+message QueryResourceRequest {
+  // in: path
+  string organization_id = 1;
+
+  // in: path
+  string namespace = 2;
+
+  // Name of the resource.
+  // in:query
+  map<string, string> predicates = 3;
+
+  // in: query
+  string offset = 4;
+
+  // in: query
+  int64 limit = 5;
+}
+
+// QueryResourceResponse is response model for querying resource.
+//
+// swagger:parameters queryResourceResponse
+message QueryResourceResponse {
+  // ID unique identifier assigned to this resource.
+  // in: body
+  string id = 1;
+
+  // Version
+  // in: body
+  int64 version = 2;
+
+  // Namespace of resource.
+  // in: Body
+  string namespace = 3;
+
+  // Name of the resource.
+  // in: body
+  string name = 4;
+
+  // Kind of the resource.
+  string kind = 5;
+
+  // capacity of resource.
+  int32 capacity = 6;
+
+  // Attributes of resource.
+  map<string, string> attributes = 7;
+
+  // AllowedActions that can be performed.
+  repeated string allowed_actions = 8;
+
+  // in: body
+  string next_offset = 9;
+
+  // Created date
+  // in: body
+  google.protobuf.Timestamp created = 10;
+
+  // Updated date
+  // in: body
+  google.protobuf.Timestamp updated = 11;
+}
+
+// CountResourceInstancesRequest is request model for counting resource instances
+//
+// swagger:parameters countResourceInstancesRequest
+message CountResourceInstancesRequest {
+  // in: path
+  string organization_id = 1;
+  // in: path
+  string namespace = 2;
+  // Resource Id
+  // in: path
+  string resource_id = 3;
+}
+
+// CountResourceInstancesResponse is response model for counting resource instances.
+//
+// swagger:parameters countResourceInstancesResponse
+message CountResourceInstancesResponse {
+  // in: body
+  int32 capacity = 1;
+
+  // in: body
+  int32 allocated = 2;
+}
+
+// QueryResourceInstanceRequest is request model for querying resources-instances.
+//
+// swagger:parameters queryResourceInstanceRequest
+message QueryResourceInstanceRequest {
+  // in: path
+  string organization_id = 1;
+
+  // in: path
+  string namespace = 2;
+
+  // in: path
+  string resource_id = 3;
+
+  // Name of the resource.
+  // in:query
+  map<string, string> predicates = 4;
+
+  // in: query
+  string offset = 5;
+
+  // in: query
+  int64 limit = 6;
+}
+
+// QueryResourceInstanceResponse is response model for querying resource-instances.
+//
+// swagger:parameters queryResourceInstanceResponse
+message QueryResourceInstanceResponse {
+  // ID unique identifier assigned to this resource.
+  // in: body
+  string id = 1;
+
+  // Version
+  // in: body
+  int64 version = 2;
+
+  // Namespace of resource.
+  // in: Body
+  string namespace = 3;
+
+  // Id of the resource.
+  // in: body
+  string resource_id = 4;
+
+  // Principal of the resource.
+  // in: body
+  string principal_id = 5;
+
+  // state of resource.
+  // in: body
+  api.authz.types.ResourceState state = 6;
+
+  // in: body
+  string next_offset = 7;
+
+  // Created date
+  // in: body
+  google.protobuf.Timestamp created = 8;
+
+  // Updated date
+  // in: body
+  google.protobuf.Timestamp updated = 9;
+}
+
+// ResourcesService for authorization request
+service ResourcesService {
+  // Create Resources swagger:route POST /api/v1/{organization_id}/{namespace}/resources resources createResourceRequest
+  //
+  // Responses:
+  // 200: createResourceResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Create (CreateResourceRequest) returns (CreateResourceResponse);
+
+  // Update Resources swagger:route PUT /api/v1/{organization_id}/{namespace}/resources/{id} resources updateResourceRequest
+  //
+  // Responses:
+  // 200: updateResourceResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Update (UpdateResourceRequest) returns (UpdateResourceResponse);
+
+  // Query Resource swagger:route GET /api/v1/{organization_id}/{namespace}/resources resources queryResourceRequest
+  //
+  // Responses:
+  // 200: queryResourceResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Query (QueryResourceRequest) returns (stream QueryResourceResponse);
+
+  // Delete Resource swagger:route DELETE /api/v1/{organization_id}/{namespace}/resources/{id} resources deleteResourceRequest
+  //
+  // Responses:
+  // 200: deleteResourceResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc Delete (DeleteResourceRequest) returns (DeleteResourceResponse);
+
+  // CountResourceInstances Resources swagger:route GET /api/v1/{organization_id}/{namespace}/resources/{id}/instance_count resources countResourceInstancesRequest
+  //
+  // Responses:
+  // 200: countResourceInstancesResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc CountResourceInstances (CountResourceInstancesRequest) returns (CountResourceInstancesResponse);
+
+  // QueryResourceInstances Resources swagger:route GET /api/v1/{organization_id}/{namespace}/resources/{id}/instances resources queryResourceInstanceRequest
+  //
+  // Responses:
+  // 200: queryResourceInstanceResponse
+  // 400	Bad Request
+  // 401	Not Authorized
+  // 500	Internal Error
+  rpc QueryResourceInstances (QueryResourceInstanceRequest) returns (stream QueryResourceInstanceResponse);
+}
